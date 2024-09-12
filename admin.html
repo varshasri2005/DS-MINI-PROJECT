@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a0dad;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #6a0dad;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .search-container input {
+            padding: 10px;
+            width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.delete-btn {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.delete-btn:hover {
+            background-color: #c9302c;
+        }
+
+        /* Style for the back button */
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            text-align: center;
+            width: 150px;
+            margin: 20px auto;
+        }
+
+        .back-btn:hover {
+            background-color: #5a0ba5;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <div class="search-container">
+        <input type="number" id="searchRollNo" placeholder="Search by Roll No">
+        <button onclick="searchStudent()">Search</button>
+    </div>
+
+    <table id="studentsTable">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Sex</th>
+            <th>Roll No</th>
+            <th>Email</th>
+            <th>College</th>
+            <th>Phone</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+        <!-- Student rows will be inserted here -->
+        </tbody>
+    </table>
+
+    <!-- Back Button -->
+    <button class="back-btn" onclick="goBack()">Back to Home</button>
+
+</div>
+
+<script>
+    // Linked list node structure
+    function StudentNode(name, sex, rollNo, email, collegeName, phoneNumber) {
+        this.name = name;
+        this.sex = sex;
+        this.rollNo = rollNo;
+        this.email = email;
+        this.collegeName = collegeName;
+        this.phoneNumber = phoneNumber;
+        this.next = null;
+    }
+
+    // Linked list class to manage student nodes
+    function StudentList() {
+        this.head = null;
+    }
+
+    // Insert student at the end of the linked list
+    StudentList.prototype.insertStudent = function (name, sex, rollNo, email, collegeName, phoneNumber) {
+        let newNode = new StudentNode(name, sex, rollNo, email, collegeName, phoneNumber);
+        if (this.head === null) {
+            this.head = newNode;
+        } else {
+            let temp = this.head;
+            while (temp.next !== null) {
+                temp = temp.next;
+            }
+            temp.next = newNode;
+        }
+    }
+
+    // Display students from the linked list in the table
+    StudentList.prototype.displayStudents = function () {
+        const studentsTableBody = document.getElementById('studentsTableBody');
+        studentsTableBody.innerHTML = '';
+
+        let temp = this.head;
+        while (temp !== null) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${temp.name}</td>
+                <td>${temp.sex}</td>
+                <td>${temp.rollNo}</td>
+                <td>${temp.email}</td>
+                <td>${temp.collegeName}</td>
+                <td>${temp.phoneNumber}</td>
+                <td><button class="delete-btn" onclick="deleteStudent(${temp.rollNo})">Delete</button></td>
+            `;
+            studentsTableBody.appendChild(row);
+            temp = temp.next;
+        }
+    }
+
+    // Search student by roll number
+    function searchStudent() {
+        const rollNo = document.getElementById('searchRollNo').value;
+        const students = JSON.parse(localStorage.getItem('studentList')) || [];
+        const result = students.filter(student => student.rollNo == rollNo);
+
+        // If found, display the result
+        if (result.length > 0) {
+            const studentList = new StudentList();
+            result.forEach(student => studentList.insertStudent(student.name, student.sex, student.rollNo, student.email, student.collegeName, student.phoneNumber));
+            studentList.displayStudents();
+        } else {
+            alert('Student not found');
+        }
+    }
+
+    // Delete student by roll number
+    function deleteStudent(rollNo) {
+        let students = JSON.parse(localStorage.getItem('studentList')) || [];
+        students = students.filter(student => student.rollNo != rollNo);
+        localStorage.setItem('studentList', JSON.stringify(students));
+        loadStudentData();
+    }
+
+    // Load student data from localStorage and display in the dashboard
+    function loadStudentData() {
+        const students = JSON.parse(localStorage.getItem('studentList')) || [];
+        const studentList = new StudentList();
+        students.forEach(student => studentList.insertStudent(student.name, student.sex, student.rollNo, student.email, student.collegeName, student.phoneNumber));
+        studentList.displayStudents();
+    }
+
+    // Go back to index.html
+    function goBack() {
+        window.location.href = 'index.html';
+    }
+
+    // Load the data when the page loads
+    window.onload = loadStudentData;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #6a0dad;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5a0cac;
+        }
+
+        .back-btn {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-btn a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .back-btn a:hover {
+            background-color: #5a0cac;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Student Registration</h2>
+        <form id="studentForm">
+            <input type="text" id="name" placeholder="Enter Name" required>
+            <select id="sex">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+            </select>
+            <input type="number" id="rollNo" placeholder="Enter Roll No" required>
+            <input type="email" id="email" placeholder="Enter Email" required>
+            <input type="text" id="collegeName" placeholder="Enter College Name" required>
+            <input type="text" id="phoneNumber" placeholder="Enter Phone Number" required>
+            <button type="submit">Submit</button>
+        </form>
+
+        <div class="back-btn">
+            <a href="index.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('studentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get the form data
+            const name = document.getElementById('name').value;
+            const sex = document.getElementById('sex').value;
+            const rollNo = document.getElementById('rollNo').value;
+            const email = document.getElementById('email').value;
+            const collegeName = document.getElementById('collegeName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            // Create a new student object
+            const student = { name, sex, rollNo, email, collegeName, phoneNumber };
+
+            // Fetch existing students from localStorage
+            let students = JSON.parse(localStorage.getItem('studentList')) || [];
+
+            // Add the new student to the array
+            students.push(student);
+
+            // Save the updated array back to localStorage
+            localStorage.setItem('studentList', JSON.stringify(students));
+
+            // Show a confirmation message
+            alert('Student registration successful!');
+
+            // Clear the form fields
+            document.getElementById('studentForm').reset();
+
+            // Optionally, redirect to the admin page after submission
+            // window.location.href = 'admin.html';
+        });
+    </script>
+</body>
+</html>
